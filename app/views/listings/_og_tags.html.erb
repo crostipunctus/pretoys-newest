@@ -1,0 +1,7 @@
+<% content_for :og_tags do %>
+  <meta property="og:site_name" content="Pretoys">
+  <meta property="og:title" content="<%= listing.title %> (<%= price_label(listing) %>)">
+  <meta property="og:description" content="<%= [ listing.age_label, listing.condition_label, listing.neighborhood ].compact.join(", ") %>">
+  <meta property="og:url" content="<%= listing_url(listing) %>">
+  <meta property="og:image" content="<%= listing.photos.attached? ? rails_representation_url(listing.photos.first.variant(:thumb)) : image_url("/og-image.jpg") %>">
+<% end %>

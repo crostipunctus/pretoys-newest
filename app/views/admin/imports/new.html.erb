@@ -1,0 +1,23 @@
+<% content_for :title, "Import the WhatsApp group" %>
+
+<section class="narrow">
+  <h1>Import the WhatsApp group</h1>
+  <p class="lead">Everyone you add here can sign in with their number. Add only people from the group.</p>
+
+  <div class="panel tips">
+    <strong>Ways to get the numbers</strong>
+    <ul>
+      <li><b>Group info:</b> in WhatsApp, open the group, tap its name, scroll to the members list, and copy the numbers.</li>
+      <li><b>One per line:</b> <code>Priya Sharma, +91 98765 43210</code> also picks up the name.</li>
+      <li><b>Chat export:</b> paste the exported chat text. Numbers of people not in your contacts are picked up.</li>
+    </ul>
+    <p class="muted small">Numbers without a country code get +<%= Rails.configuration.x.default_country_code %>.</p>
+  </div>
+
+  <%= form_with url: preview_admin_import_path, class: "panel form-card", data: { turbo: false } do |form| %>
+    <%= form.label :text, "Paste numbers here", class: "label" %>
+    <%= form.text_area :text, value: @text, rows: 10, required: true, class: "input mono",
+          placeholder: "Priya Sharma, +91 98765 43210\nAnjali +91 99887 76655\n9123456789" %>
+    <%= form.submit "Find numbers", class: "btn btn-primary btn-block" %>
+  <% end %>
+</section>

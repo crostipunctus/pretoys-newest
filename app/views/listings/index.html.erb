@@ -1,0 +1,47 @@
+<header class="page-head">
+  <div>
+    <h1>Hi <%= current_member.first_name %></h1>
+    <p class="muted">Toys from <%= pluralize(@member_count, "mom") %> in the circle</p>
+  </div>
+</header>
+
+<%= form_with url: listings_path, method: :get, class: "filters", data: { controller: "autosubmit" } do |form| %>
+  <%= hidden_field_tag :category, params[:category] if params[:category].present? %>
+  <div class="search">
+    <%= icon "search" %>
+    <%= form.search_field :q, value: params[:q], placeholder: "Search lego, books, scooter", class: "input",
+          enterkeyhint: "search", aria: { label: "Search toys" } %>
+  </div>
+  <div class="filters-row">
+    <%= form.select :age, options_for_select(Listing::AGE_GROUPS.invert, params[:age]), { include_blank: "Any age" },
+          class: "input input-sm", data: { action: "autosubmit#submit" }, aria: { label: "Age" } %>
+    <label class="toggle">
+      <%= form.check_box :free, { checked: params[:free] == "1", data: { action: "autosubmit#submit" } }, "1", nil %>
+      <span>Free only</span>
+    </label>
+  </div>
+<% end %>
+
+<nav class="chips" aria-label="Categories">
+  <%= link_to "All", listings_path(request.query_parameters.except("category")), class: [ "chip", ("is-active" if params[:category].blank?) ] %>
+  <% Listing::CATEGORIES.each do |key, (label, tone)| %>
+    <%= link_to listings_path(request.query_parameters.merge("category" => key)), class: [ "chip", ("is-active" if params[:category] == key) ] do %>
+      <%= bead tone %> <%= label %>
+    <% end %>
+  <% end %>
+</nav>
+
+<% if @listings.any? %>
+  <div class="grid"><%= render @listings %></div>
+<% else %>
+  <div class="empty">
+    <div class="ring-mark tone-turmeric"></div>
+    <% if request.query_parameters.any? %>
+      <p>No toys match those filters.</p>
+      <%= link_to "Clear filters", listings_path, class: "btn btn-outline" %>
+    <% else %>
+      <p>Nothing listed yet. Outgrown toys at home? Be the first to pass one on.</p>
+      <%= link_to new_listing_path, class: "btn btn-primary" do %><%= icon "plus" %> List a toy<% end %>
+    <% end %>
+  </div>
+<% end %>

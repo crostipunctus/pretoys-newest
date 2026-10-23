@@ -1,0 +1,29 @@
+<% content_for :title, "Your profile" %>
+
+<section class="narrow">
+  <div class="profile-head">
+    <%= avatar(@member, size: :lg) %>
+    <div>
+      <h1><%= @member.name || "Welcome to the circle" %></h1>
+      <p class="muted"><%= @member.phone %>, <%= vouch_line(@member) %></p>
+    </div>
+  </div>
+
+  <%= form_with model: @member, url: profile_path, method: :patch, class: "panel form-card" do |form| %>
+    <%= render "shared/errors", record: @member %>
+
+    <%= form.label :name, "Your name", class: "label" %>
+    <%= form.text_field :name, required: true, autocomplete: "name", placeholder: "e.g. Priya Sharma", class: "input" %>
+    <p class="hint">Use the name moms in the group know you by.</p>
+
+    <%= form.label :neighborhood, "Your area", class: "label" %>
+    <%= form.text_field :neighborhood, placeholder: "e.g. Indiranagar", class: "input" %>
+    <p class="hint">Roughly where pickups happen. Pre-fills your listings.</p>
+
+    <%= form.submit "Save profile", class: "btn btn-primary btn-block" %>
+  <% end %>
+
+  <% if @member.name.present? %>
+    <%= button_to "Sign out", session_path, method: :delete, class: "btn btn-ghost btn-block" %>
+  <% end %>
+</section>

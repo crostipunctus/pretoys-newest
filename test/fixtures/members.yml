@@ -1,0 +1,24 @@
+admin:
+  name: Roshni
+  phone: "+919900000001"
+  admin: true
+  source: whatsapp_group
+  joined_at: <%= 1.month.ago.to_fs(:db) %>
+
+priya:
+  name: Priya Sharma
+  phone: "+919900000002"
+  neighborhood: Koramangala
+  source: whatsapp_group
+  joined_at: <%= 1.month.ago.to_fs(:db) %>
+
+nameless:
+  phone: "+919900000003"
+  source: whatsapp_group
+
+asha:
+  name: Asha Rao
+  phone: "+919900000004"
+  source: invite
+  invited_by: priya
+  joined_at: <%= 1.week.ago.to_fs(:db) %>

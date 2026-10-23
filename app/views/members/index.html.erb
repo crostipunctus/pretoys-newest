@@ -1,0 +1,31 @@
+<% content_for :title, "The circle" %>
+
+<header class="page-head">
+  <div>
+    <h1>The circle</h1>
+    <p class="muted"><%= pluralize(@founders.size + @invited.size, "member") %>, each one vouched for by someone here</p>
+  </div>
+  <%= link_to "Invite a mom", new_invite_path, class: "btn btn-primary btn-sm" %>
+</header>
+
+<% if current_member.admin? %>
+  <div class="panel admin-card">
+    <strong>You're an admin</strong>
+    <p>Bring in the rest of the WhatsApp group by pasting their numbers.</p>
+    <%= link_to "Import from the WhatsApp group", new_admin_import_path, class: "btn btn-outline btn-sm" %>
+  </div>
+<% end %>
+
+<h2 class="section-title">From the WhatsApp group</h2>
+<% if @founders.any? %>
+  <div class="member-list"><%= render partial: "member_row", collection: @founders, as: :member %></div>
+<% else %>
+  <p class="muted">Nobody imported yet.</p>
+<% end %>
+
+<h2 class="section-title">Invited by members</h2>
+<% if @invited.any? %>
+  <div class="member-list"><%= render partial: "member_row", collection: @invited, as: :member %></div>
+<% else %>
+  <p class="muted">No invites yet. Know a mom who'd love this? <%= link_to "Invite them", new_invite_path %>.</p>
+<% end %>

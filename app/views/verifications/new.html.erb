@@ -1,0 +1,19 @@
+<% content_for :title, "Enter your code" %>
+
+<section class="narrow">
+  <h1>Check your messages</h1>
+  <p class="lead">We sent a 6-digit code to <strong><%= @member.masked_phone %></strong>.</p>
+
+  <% if flash[:dev_code] %>
+    <div class="flash flash-dev">Development mode: your code is <strong><%= flash[:dev_code] %></strong></div>
+  <% end %>
+
+  <%= form_with url: verification_path, class: "panel form-card" do |form| %>
+    <%= form.label :code, "Sign-in code", class: "label" %>
+    <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code",
+          inputmode: "numeric", pattern: "[0-9 ]*", maxlength: 7, placeholder: "123456", class: "input input-lg input-code" %>
+    <%= form.submit "Sign in", class: "btn btn-primary btn-block btn-lg" %>
+  <% end %>
+
+  <p class="center"><%= link_to "Didn't get it? Send a new code", new_session_path %></p>
+</section>

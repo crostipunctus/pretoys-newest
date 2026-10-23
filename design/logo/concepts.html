@@ -1,0 +1,382 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pretoys logo concepts</title>
+<style>
+  body { margin: 0; background: repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 24px 24px; font-family: system-ui; }
+  canvas { max-width: 100%; height: auto; display: block; }
+  #status { position: fixed; top: 8px; left: 8px; background: #000c; color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="status">loading…</div>
+<script type="module">
+// Three wordmark directions, all built from toy parts:
+//   ?style=lacquer  lathe-turned lacquered wood, Channapatna style
+//   ?style=blocks   flat painted wooden blocks, Bauhaus building-game style
+//   ?style=train    a wooden name train, one letter per carriage
+// Then call saveRender("name.png") to write design/logo/out/name.png.
+import * as THREE from "three";
+import { TTFLoader } from "three/addons/loaders/TTFLoader.js";
+import { Font } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const params = new URLSearchParams(location.search);
+const STYLE = params.get("style") || "lacquer";
+const WIDTH = Number(params.get("w") || 2400);
+const HEIGHT = Number(params.get("h") || 900);
+const status = document.getElementById("status");
+const V = (x, y, z = 0) => new THREE.Vector3(x, y, z);
+const rad = THREE.MathUtils.degToRad;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(WIDTH, HEIGHT, false);
+renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = { lacquer: 1.0, blocks: 0.8, train: 0.86 }[STYLE] ?? 1;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = STYLE === "blocks" ? 0.35 : 0.5;
+
+const key = new THREE.DirectionalLight(0xffffff, 2.4);
+key.castShadow = true;
+key.shadow.mapSize.set(4096, 4096);
+key.shadow.radius = 10;
+key.shadow.blurSamples = 24;
+key.shadow.bias = -0.0005;
+scene.add(key, key.target);
+const fill = new THREE.DirectionalLight(0xfff3e3, 0.7);
+fill.position.set(6, -1, 7);
+scene.add(fill);
+
+// ---------- materials ----------
+
+function seeded(seed) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function woodTexture(seed = 7, base = "#e0bf93") {
+  const random = seeded(seed);
+  const c = document.createElement("canvas");
+  c.width = 1024; c.height = 512;
+  const g = c.getContext("2d");
+  g.fillStyle = base;
+  g.fillRect(0, 0, c.width, c.height);
+  for (let i = 0; i < 90; i++) {
+    const y0 = random() * c.height, amp = 2 + random() * 9, freq = 0.003 + random() * 0.008, phase = random() * 6;
+    g.strokeStyle = `rgba(${140 + random() * 30}, ${92 + random() * 25}, ${52 + random() * 20}, ${0.08 + random() * 0.22})`;
+    g.lineWidth = 0.6 + random() * 2.4;
+    g.beginPath();
+    for (let x = 0; x <= c.width; x += 8) {
+      const y = y0 + Math.sin(x * freq + phase) * amp;
+      x === 0 ? g.moveTo(x, y) : g.lineTo(x, y);
+    }
+    g.stroke();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+const wood = (seed, repeat = 1) => {
+  const map = woodTexture(seed);
+  map.repeat.set(repeat, repeat);
+  return new THREE.MeshPhysicalMaterial({ map, bumpMap: map, bumpScale: 0.6, roughness: 0.62, clearcoat: 0.12, clearcoatRoughness: 0.5 });
+};
+
+const paint = (color, { gloss = false } = {}) => {
+  const grain = woodTexture(3, "#999999");
+  return new THREE.MeshPhysicalMaterial({
+    color, bumpMap: grain, bumpScale: gloss ? 0.15 : 0.45,
+    roughness: gloss ? 0.14 : 0.5, clearcoat: gloss ? 1 : 0.2, clearcoatRoughness: gloss ? 0.03 : 0.4,
+  });
+};
+
+// ---------- letters drawn as strokes (lacquer) ----------
+
+class ArcCurve3 extends THREE.Curve {
+  constructor(cx, cy, r, a0, a1) { super(); Object.assign(this, { cx, cy, r, a0, a1 }); }
+  getPoint(t, target = new THREE.Vector3()) {
+    const a = rad(this.a0 + (this.a1 - this.a0) * t);
+    return target.set(this.cx + this.r * Math.cos(a), this.cy + this.r * Math.sin(a), 0);
+  }
+}
+
+// Lowercase skeletons on an x-height of 1. Lines are [x0, y0, x1, y1]; arcs are [cx, cy, r, from°, to°].
+const STROKES = {
+  p: { w: 1.1, parts: [["arc", 0.62, 0.5, 0.48, 0, 360], ["line", 0, -0.55, 0, 1]] },
+  r: { w: 0.66, parts: [["line", 0, 0, 0, 1], ["arc", 0.48, 0.52, 0.48, 180, 62]] },
+  e: { w: 1.0, parts: [["arc", 0.5, 0.5, 0.5, 0, 318], ["line", 0, 0.5, 1, 0.5]] },
+  t: { w: 0.6, parts: [["line", 0.24, 1.32, 0.24, 0], ["line", 0, 0.98, 0.6, 0.98]] },
+  o: { w: 1.0, parts: [["arc", 0.5, 0.5, 0.5, 0, 360]] },
+  y: { w: 1.0, parts: [["line", 0, 1, 0.54, 0.08], ["line", 1, 1, 0.22, -0.55]] },
+  s: { w: 0.58, parts: [["arc", 0.3, 0.73, 0.27, 15, 270], ["arc", 0.3, 0.27, 0.27, 90, -165]] },
+};
+
+const LAC = { red: "#b5202b", turmeric: "#eaa212", green: "#23774a", indigo: "#1d2a64", ivory: "#f3e7d1" };
+// Base color and ring colors per piece, in word order.
+const LACQUER_PIECES = [
+  ["red", "turmeric", "green"], ["turmeric", "red", "indigo"],
+  ["green", "turmeric", "red"], ["red", "ivory", "indigo"],
+  ["indigo", "turmeric", "red"], ["turmeric", "green", "red"],
+  ["red", "turmeric", "green"], ["green", "ivory", "red"],
+  ["turmeric", "red", "indigo"],
+  ["indigo", "turmeric", "red"], ["red", "turmeric", "green"],
+  ["green", "turmeric", "red"], ["turmeric", "indigo", "red"],
+];
+
+function bandTexture(base, ring1, ring2, closed) {
+  const c = document.createElement("canvas");
+  c.width = 2048; c.height = 8;
+  const g = c.getContext("2d");
+  g.fillStyle = base;
+  g.fillRect(0, 0, c.width, c.height);
+  const marks = closed ? [0.125, 0.375, 0.625, 0.875] : [0.075, 0.925];
+  for (const m of marks) {
+    const x = m * c.width;
+    g.fillStyle = ring1; g.fillRect(x - 26, 0, 52, c.height);
+    g.fillStyle = ring2; g.fillRect(x - 44, 0, 10, c.height); g.fillRect(x + 34, 0, 10, c.height);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+function buildLacquer(word) {
+  const R = 0.14;
+  const group = new THREE.Group();
+  let cursor = 0, piece = 0;
+  for (const ch of word) {
+    const glyph = STROKES[ch];
+    glyph.parts.forEach((part, i) => {
+      const [base, ring1, ring2] = LACQUER_PIECES[piece++ % LACQUER_PIECES.length].map((k) => LAC[k]);
+      const closed = part[0] === "arc" && Math.abs(part[5] - part[4]) >= 360;
+      const curve = part[0] === "line"
+        ? new THREE.LineCurve3(V(part[1], part[2]), V(part[3], part[4]))
+        : new ArcCurve3(part[1], part[2], part[3], part[4], part[5]);
+      const material = new THREE.MeshPhysicalMaterial({
+        map: bandTexture(base, ring1, ring2, closed), roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.03,
+      });
+      const z = i * R * 0.9;
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, closed ? 256 : 96, R, 48, closed), material);
+      tube.position.set(cursor, 0, z);
+      group.add(tube);
+      if (!closed) {
+        for (const t of [0, 1]) {
+          const bead = new THREE.Mesh(new THREE.SphereGeometry(R * 1.2, 48, 32), paint(ring1, { gloss: true }));
+          bead.position.copy(curve.getPoint(t)).add(V(cursor, 0, z));
+          group.add(bead);
+        }
+      }
+    });
+    cursor += glyph.w + 2 * R + 0.24;
+  }
+  return group;
+}
+
+// ---------- letters cut from flat blocks (Bauhaus building game) ----------
+
+function rect(x0, y0, x1, y1) {
+  const s = new THREE.Shape();
+  s.moveTo(x0, y0); s.lineTo(x1, y0); s.lineTo(x1, y1); s.lineTo(x0, y1); s.closePath();
+  return s;
+}
+function ring(cx, cy, ro, ri, a0, a1) {
+  const s = new THREE.Shape();
+  if (Math.abs(a1 - a0) >= 360) {
+    s.absarc(cx, cy, ro, 0, Math.PI * 2, false);
+    const hole = new THREE.Path();
+    hole.absarc(cx, cy, ri, 0, Math.PI * 2, true);
+    s.holes.push(hole);
+    return s;
+  }
+  s.absarc(cx, cy, ro, rad(a0), rad(a1), a1 < a0);
+  s.absarc(cx, cy, ri, rad(a1), rad(a0), a1 >= a0);
+  s.closePath();
+  return s;
+}
+function arm(x0, y0, x1, y1, w) {
+  const s = new THREE.Shape();
+  s.moveTo(x0 - w / 2, y0); s.lineTo(x0 + w / 2, y0); s.lineTo(x1 + w / 2, y1); s.lineTo(x1 - w / 2, y1); s.closePath();
+  return s;
+}
+
+const T = 0.27;
+const BLOCKS = {
+  p: { w: 0.77, parts: [rect(0, -0.55, T, 1), ring(T, 0.5, 0.5, 0.5 - T, -90, 90)] },
+  r: { w: 0.8, parts: [rect(0, 0, T, 1), ring(T, 0.45, 0.55, 0.55 - T, 90, 12)] },
+  e: { w: 1.0, parts: [ring(0.5, 0.5, 0.5, 0.5 - T, 0, 320), rect(0, 0.4, 1, 0.6)] },
+  t: { w: 0.64, parts: [rect(0.19, 0, 0.19 + T, 1.32), rect(0, 0.8, 0.64, 1.02)] },
+  o: { w: 1.0, parts: [ring(0.5, 0.5, 0.5, 0.5 - T, 0, 360)] },
+  y: { w: 1.0, parts: [arm(0.14, 1, 0.58, 0.08, 0.29), arm(0.98, 1, 0.24, -0.55, 0.29)] },
+  s: { w: 0.62, parts: [ring(0.31, 0.71, 0.31, 0.11, 25, 270), ring(0.31, 0.29, 0.31, 0.11, 90, -155)] },
+};
+
+const BAU = { red: "#e0332a", yellow: "#f5bf1a", blue: "#2153c4" };
+const BLOCK_COLORS = ["blue", "red", "yellow", "blue", "red", "wood", "blue", "yellow", "red", "wood", "red", "blue", "yellow"];
+
+function buildBlocks(word) {
+  const group = new THREE.Group();
+  let cursor = 0, piece = 0;
+  for (const ch of word) {
+    const glyph = BLOCKS[ch];
+    glyph.parts.forEach((shape, i) => {
+      const color = BLOCK_COLORS[piece++ % BLOCK_COLORS.length];
+      const geo = new THREE.ExtrudeGeometry(shape, {
+        depth: 0.26, curveSegments: 64, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 4,
+      });
+      const mesh = new THREE.Mesh(geo, color === "wood" ? wood(piece * 13, 1.2) : paint(BAU[color]));
+      mesh.position.set(cursor, 0, i * 0.15);
+      group.add(mesh);
+    });
+    cursor += glyph.w + 0.2;
+  }
+  return group;
+}
+
+// ---------- a wooden name train ----------
+
+const TRAIN = { red: "#c9372c", navy: "#22345e", green: "#3d7d5a", mustard: "#e3a82b" };
+
+async function buildTrain(word) {
+  const json = await new Promise((resolve, reject) => new TTFLoader().load("font.ttf", resolve, undefined, reject));
+  const font = new Font(json);
+  const group = new THREE.Group();
+  const carColors = ["red", "navy", "green", "mustard"];
+  const wheelGeo = new THREE.CylinderGeometry(0.17, 0.17, 0.1, 64);
+  const hubGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.12, 32);
+  const wheelMat = wood(91, 0.4);
+  const hubMat = paint("#2a2a2a");
+  let cursor = 0;
+
+  const addWheels = (x, w, y) => {
+    for (const dx of [-w / 2 + 0.24, w / 2 - 0.24]) {
+      for (const dz of [-0.33, 0.33]) {
+        const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+        wheel.rotation.x = Math.PI / 2;
+        wheel.position.set(x + dx, y, dz);
+        const hub = new THREE.Mesh(hubGeo, hubMat);
+        hub.rotation.x = Math.PI / 2;
+        hub.position.set(x + dx, y, dz + Math.sign(dz) * 0.02);
+        group.add(wheel, hub);
+      }
+    }
+  };
+
+  [...word].forEach((ch, i) => {
+    const geo = new TextGeometry(ch, { font, size: 1, depth: 0.24, curveSegments: 24, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.025, bevelSegments: 4 });
+    geo.computeBoundingBox();
+    const bb = geo.boundingBox;
+    const w = bb.max.x - bb.min.x;
+    const carW = Math.max(w + 0.22, 0.95);
+    geo.translate(-(bb.min.x + w / 2), -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+    const letter = new THREE.Mesh(geo, wood(i * 17 + 5, 1.1));
+    letter.position.set(cursor + carW / 2, 0.14, 0);
+
+    const car = new THREE.Mesh(new RoundedBoxGeometry(carW, 0.24, 0.62, 4, 0.05), paint(TRAIN[carColors[i % carColors.length]]));
+    car.position.set(cursor + carW / 2, 0.02, 0);
+    addWheels(cursor + carW / 2, carW, -0.13);
+    group.add(letter, car);
+
+    if (i > 0) {
+      const coupler = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.2, 16), hubMat);
+      coupler.rotation.z = Math.PI / 2;
+      coupler.position.set(cursor - 0.05, 0.0, 0);
+      group.add(coupler);
+    }
+    cursor += carW + 0.1;
+  });
+
+  // The engine pulls from the front (right).
+  const ex = cursor + 0.1;
+  const body = new THREE.Mesh(new RoundedBoxGeometry(1.3, 0.5, 0.62, 4, 0.08), paint(TRAIN.red));
+  body.position.set(ex + 0.65, 0.15, 0);
+  const cab = new THREE.Mesh(new RoundedBoxGeometry(0.55, 0.62, 0.66, 4, 0.06), paint(TRAIN.navy));
+  cab.position.set(ex + 0.3, 0.65, 0);
+  const roof = new THREE.Mesh(new RoundedBoxGeometry(0.7, 0.1, 0.76, 2, 0.04), paint(TRAIN.mustard));
+  roof.position.set(ex + 0.3, 1.0, 0);
+  const boiler = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.75, 48), wood(77, 0.6));
+  boiler.rotation.z = Math.PI / 2;
+  boiler.position.set(ex + 0.95, 0.55, 0);
+  const chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.08, 0.38, 32), paint(TRAIN.navy));
+  chimney.position.set(ex + 1.15, 0.9, 0);
+  group.add(body, cab, roof, boiler, chimney);
+  addWheels(ex + 0.65, 1.3, -0.13);
+  return group;
+}
+
+// ---------- scene ----------
+
+// ?word=p renders a single letter, used for the app icon.
+const word = params.get("word") || (STYLE === "train" ? "PRETOYS" : "pretoys");
+const logo = STYLE === "lacquer" ? buildLacquer(word) : STYLE === "blocks" ? buildBlocks(word) : await buildTrain(word);
+logo.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+scene.add(logo);
+
+const box = new THREE.Box3().setFromObject(logo);
+logo.position.sub(box.getCenter(V(0, 0, 0)));
+const size = box.getSize(V(0, 0, 0));
+const halfSpan = size.x / 2 + 2;
+
+const shadowCam = key.shadow.camera;
+Object.assign(shadowCam, { left: -halfSpan, right: halfSpan, top: halfSpan, bottom: -halfSpan, near: 0.1, far: 60 });
+shadowCam.updateProjectionMatrix();
+
+// ?shadow=0 leaves out the wall/floor shadow (cleaner at small sizes, like the site header).
+const catcher = new THREE.Mesh(new THREE.PlaneGeometry(80, 40), new THREE.ShadowMaterial({ opacity: 0.2 }));
+catcher.receiveShadow = true;
+if (params.get("shadow") !== "0") scene.add(catcher);
+
+const camera = new THREE.PerspectiveCamera(20, WIDTH / HEIGHT, 0.1, 300);
+if (STYLE === "train") {
+  // Floor under the wheels, camera a little above and to the side.
+  catcher.rotation.x = -Math.PI / 2;
+  catcher.position.y = -size.y / 2 - 0.02;
+  key.position.set(-6, 14, 9);
+  const dist = (size.x * 1.1 / 2) / Math.tan(rad(camera.fov / 2)) / camera.aspect;
+  camera.position.set(size.x * 0.06, size.y * 1.1, dist);
+} else {
+  // A wall just behind the letters catches their shadow.
+  catcher.position.z = -size.z / 2 - 0.45;
+  key.position.set(-5, 8, 12);
+  const fit = Math.max(size.x, size.y * camera.aspect) * 1.08;
+  const dist = (fit / 2) / Math.tan(rad(camera.fov / 2)) / camera.aspect;
+  camera.position.set(0, size.y * 0.35, dist);
+}
+camera.lookAt(0, 0, 0);
+
+renderer.render(scene, camera);
+status.textContent = `rendered ${STYLE}`;
+window.renderDone = true;
+
+window.saveRender = async (name = `concept-${STYLE}.png`) => {
+  const blob = await new Promise((r) => renderer.domElement.toBlob(r, "image/png"));
+  const res = await fetch(`/save?name=${encodeURIComponent(name)}`, { method: "POST", body: blob });
+  return res.status + " " + (await res.text());
+};
+</script>
+</body>
+</html>

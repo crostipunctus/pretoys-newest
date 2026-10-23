@@ -1,0 +1,18 @@
+<% content_for :title, "My toys" %>
+
+<header class="page-head">
+  <div>
+    <h1>My toys</h1>
+    <p class="muted">Mark toys reserved or gone so moms know what's still around.</p>
+  </div>
+</header>
+
+<% if @listings.any? %>
+  <div class="grid"><%= render @listings %></div>
+<% else %>
+  <div class="empty">
+    <div class="ring-mark tone-leaf"></div>
+    <p>You haven't listed anything yet. A photo and a price is all it takes.</p>
+    <%= link_to new_listing_path, class: "btn btn-primary" do %><%= icon "plus" %> List a toy<% end %>
+  </div>
+<% end %>

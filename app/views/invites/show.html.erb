@@ -1,0 +1,14 @@
+<% content_for :title, "Invite added" %>
+
+<section class="narrow center">
+  <div class="ring-mark tone-leaf"></div>
+  <h1><%= @member.first_name %> is in the circle</h1>
+  <p class="lead">Let them know. They sign in with <strong><%= @member.phone %></strong>.</p>
+
+  <%= link_to whatsapp_chat_url(@member.phone, "Hi #{@member.first_name}! I've added you to Pretoys, where moms from our group pass on toys our kids have outgrown. Sign in with this number: #{root_url}"),
+        class: "btn btn-whatsapp btn-block btn-lg", target: "_blank", rel: "noopener" do %>
+    <%= icon "chat" %> Message <%= @member.first_name %> on WhatsApp
+  <% end %>
+
+  <p><%= link_to "Invite someone else", new_invite_path %></p>
+</section>

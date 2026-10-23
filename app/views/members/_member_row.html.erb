@@ -1,0 +1,18 @@
+<div class="member-row">
+  <%= link_to member, class: "member-row-main" do %>
+    <%= avatar(member) %>
+    <span>
+      <span class="member-row-name"><%= member.display_name %></span>
+      <span class="muted small">
+        <%= member.neighborhood || "Area not set" %><% unless member.joined? %>, <span class="pill">hasn't signed in yet</span><% end %>
+      </span>
+    </span>
+  <% end %>
+  <% if member.invite? && member.invited_by %>
+    <span class="muted small member-row-vouch">via <%= member.invited_by.first_name %></span>
+  <% end %>
+  <% if current_member.admin? && member != current_member %>
+    <%= button_to "Remove", admin_member_path(member), method: :delete, class: "btn btn-ghost btn-xs",
+          form: { data: { turbo_confirm: "Remove #{member.display_name} and their listings from the circle?" } } %>
+  <% end %>
+</div>

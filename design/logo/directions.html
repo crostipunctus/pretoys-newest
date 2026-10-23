@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pretoys directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wdth,wght@75..125,400..800&family=Jost:wght@400;500;700&family=Zilla+Slab:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e9e7; color: #222; font: 15px/1.5 system-ui, sans-serif; }
+  .sheet { display: grid; grid-template-columns: repeat(3, minmax(340px, 1fr)); gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
+  @media (max-width: 1100px) { .sheet { grid-template-columns: 1fr; max-width: 560px; } }
+  .tile { border-radius: 20px; padding: 24px 22px 28px; display: flex; flex-direction: column; gap: 16px; }
+  .tile h2 { margin: 0; font-size: 28px; line-height: 1.1; }
+  .tile .idea { margin: 0; max-width: 46ch; }
+  .tile .logo { width: 100%; height: auto; }
+  .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+  .swatch { flex: 1 1 0; min-width: 58px; border-radius: 10px; padding: 34px 8px 6px; font-size: 11px; line-height: 1.2; }
+  .phone { width: 300px; height: 610px; margin: 4px auto 0; border-radius: 34px; border: 8px solid #1c1c1c; overflow: hidden; position: relative; box-shadow: 0 18px 40px rgb(0 0 0 / 18%); }
+  .phone .screen { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .phone .scroll { flex: 1; overflow: hidden; padding: 0 14px; }
+  .tabbar { display: flex; justify-content: space-around; padding: 8px 6px 14px; font-size: 10px; }
+  .tabbar span { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .tabbar svg { width: 20px; height: 20px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card .photo { aspect-ratio: 1; position: relative; }
+  .card .title { font-size: 13px; line-height: 1.25; margin-top: 6px; }
+  .card .meta { font-size: 11px; opacity: 0.72; }
+
+  /* ---------- A. Lacquer ---------- */
+  .dir-a { --ivory: #fffdf8; --indigo: #1d2a64; --lac: #b5202b; --turmeric: #eaa212; --leaf: #23774a; --wood: #e6cfa8;
+    background: var(--ivory); color: var(--indigo); font-family: "Anek Latin", sans-serif; }
+  .dir-a h2 { font-stretch: 118%; font-weight: 750; letter-spacing: -0.01em; }
+  .dir-a .band { height: 8px; background: linear-gradient(90deg, var(--lac) 0 58%, var(--ivory) 58% 60%, var(--turmeric) 60% 74%, var(--ivory) 74% 76%, var(--leaf) 76% 86%, var(--ivory) 86% 88%, var(--indigo) 88%); }
+  .dir-a .typeset { font-size: 30px; font-weight: 750; font-stretch: 112%; line-height: 1.05; }
+  .dir-a .typeset small { display: block; font-size: 15px; font-weight: 400; font-stretch: 100%; margin-top: 6px; }
+  .dir-a .screen { background: var(--ivory); }
+  .dir-a .top { background: var(--ivory); padding: 14px 14px 10px; }
+  .dir-a .top img { height: 34px; width: auto; }
+  .dir-a .hello { font-size: 22px; font-weight: 750; font-stretch: 115%; margin: 14px 0 2px; line-height: 1.1; }
+  .dir-a .sub { font-size: 12px; margin: 0 0 10px; opacity: 0.75; }
+  .dir-a .search { border: 2px solid var(--indigo); border-radius: 999px; padding: 8px 14px; font-size: 13px; opacity: 0.8; }
+  .dir-a .chips { display: flex; gap: 6px; margin: 10px 0 12px; white-space: nowrap; }
+  .dir-a .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #f3ecdf; }
+  .dir-a .chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / 18%); }
+  .dir-a .chip.on { background: var(--indigo); color: var(--ivory); }
+  .dir-a .photo { border-radius: 14px; background: var(--bg); overflow: hidden; }
+  .dir-a .photo::after { content: ""; position: absolute; inset: 22% 22%; border-radius: 50%; background: repeating-radial-gradient(circle, var(--c1) 0 7px, var(--c2) 7px 9px, var(--c1) 9px 16px); opacity: 0.9; }
+  .dir-a .price { display: inline-block; margin-top: 6px; font-weight: 800; font-size: 13px; padding: 1px 9px 1px 12px; border-radius: 999px; background: #f3ecdf; box-shadow: inset 4px 0 0 var(--lac); }
+  .dir-a .price.free { box-shadow: inset 4px 0 0 var(--leaf); color: var(--leaf); }
+  .dir-a .title { font-weight: 600; }
+  .dir-a .cta { margin: 12px 0; background: var(--lac); color: #fff; border-radius: 999px; text-align: center; padding: 10px; font-weight: 700; font-size: 14px; }
+  .dir-a .tabbar { border-top: 1px solid #eadfcd; background: var(--ivory); }
+  .dir-a .tabbar .on { color: var(--lac); font-weight: 700; }
+
+  /* ---------- B. Building game ---------- */
+  .dir-b { --paper: #ffffff; --ink: #15214a; --red: #e0332a; --yellow: #f5bf1a; --blue: #2153c4; --beech: #ddb88b;
+    background: var(--paper); color: var(--ink); font-family: "Jost", sans-serif; }
+  .dir-b h2 { font-weight: 700; font-size: 34px; text-transform: lowercase; letter-spacing: -0.02em; }
+  .dir-b .typeset { font-size: 36px; font-weight: 700; line-height: 0.95; letter-spacing: -0.02em; }
+  .dir-b .typeset small { display: block; font-size: 15px; font-weight: 400; letter-spacing: 0; margin-top: 8px; }
+  .dir-b .screen { background: var(--paper); }
+  .dir-b .top { padding: 16px 14px 6px; display: flex; align-items: center; justify-content: space-between; }
+  .dir-b .top img { height: 36px; width: auto; }
+  .dir-b .plus { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: #fff; display: grid; place-items: center; font-size: 22px; font-weight: 500; }
+  .dir-b .hello { font-size: 34px; font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin: 8px 0 12px; }
+  .dir-b .search { border-bottom: 3px solid var(--ink); padding: 6px 0; font-size: 14px; opacity: 0.75; }
+  .dir-b .shapes { display: flex; gap: 14px; margin: 14px 0; }
+  .dir-b .shape { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; }
+  .dir-b .shape svg { width: 30px; height: 30px; }
+  .dir-b .grid { gap: 14px 10px; }
+  .dir-b .photo { background: var(--bg); }
+  .dir-b .photo::after { content: ""; position: absolute; left: 26%; right: 26%; top: 30%; bottom: 22%; background: var(--c1); border-radius: var(--r, 0); }
+  .dir-b .sticker { position: absolute; right: -6px; top: -6px; width: 46px; height: 46px; border-radius: 50%; background: var(--yellow); display: grid; place-items: center; font-weight: 700; font-size: 11px; z-index: 1; }
+  .dir-b .sticker.free { background: var(--blue); color: #fff; }
+  .dir-b .title { font-weight: 500; font-size: 14px; }
+  .dir-b .tabbar { border-top: 3px solid var(--ink); }
+  .dir-b .tabbar .on { color: var(--red); font-weight: 700; }
+
+  /* ---------- C. Name train ---------- */
+  .dir-c { --sky: #d9ecf7; --navy: #22345e; --red: #c9372c; --mustard: #e3a82b; --green: #3d7d5a; --beech: #e2c29a;
+    background: var(--sky); color: var(--navy); font-family: "Atkinson Hyperlegible", sans-serif; }
+  .dir-c h2, .dir-c .typeset, .dir-c .hello, .dir-c .row h4 { font-family: "Zilla Slab", serif; font-weight: 700; }
+  .dir-c h2 { font-size: 32px; }
+  .dir-c .typeset { font-size: 32px; line-height: 1.05; }
+  .dir-c .typeset small { display: block; font-family: "Atkinson Hyperlegible", sans-serif; font-weight: 400; font-size: 15px; margin-top: 6px; }
+  .dir-c .screen { background: var(--sky); }
+  .dir-c .top { padding: 14px 14px 0; }
+  .dir-c .top img { height: 30px; width: auto; }
+  .dir-c .rail { height: 4px; margin-top: 6px; background: repeating-linear-gradient(90deg, var(--navy) 0 10px, transparent 10px 16px); opacity: 0.35; }
+  .dir-c .hello { font-size: 24px; margin: 12px 0 8px; line-height: 1.1; }
+  .dir-c .search { background: #fff; border-radius: 12px; padding: 9px 12px; font-size: 13px; color: #6a7891; }
+  .dir-c .row { margin-top: 14px; }
+  .dir-c .row h4 { margin: 0 0 8px; font-size: 16px; }
+  .dir-c .cars { display: flex; gap: 8px; }
+  .dir-c .car { flex: none; width: 132px; position: relative; padding-bottom: 12px; }
+  .dir-c .car .body { background: #fff; border-radius: 12px 12px 6px 6px; overflow: hidden; border-bottom: 8px solid var(--c); }
+  .dir-c .car .photo { aspect-ratio: 4 / 3; background: var(--bg); position: relative; }
+  .dir-c .car .photo::after { content: ""; position: absolute; left: 30%; right: 30%; top: 22%; bottom: 22%; border-radius: 10px; background: var(--c1); }
+  .dir-c .car .txt { padding: 6px 8px 7px; }
+  .dir-c .car .title { margin: 0; font-weight: 700; font-size: 12px; }
+  .dir-c .car .meta { font-size: 11px; }
+  .dir-c .car::before, .dir-c .car::after { content: ""; position: absolute; bottom: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--beech); border: 4px solid var(--navy); }
+  .dir-c .car::before { left: 20px; } .dir-c .car::after { right: 20px; }
+  .dir-c .tabbar { background: #fff; border-radius: 18px 18px 0 0; }
+  .dir-c .tabbar .on { color: var(--red); font-weight: 700; }
+
+  .notes { font-size: 13px; margin: 0; padding-left: 18px; }
+  .notes li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- A -->
+  <section class="tile dir-a">
+    <h2>A. Lacquer</h2>
+    <p class="idea">Letters turned on a lathe and lacquered like Channapatna toys, with thin colored rings. That ring stripe is the one repeated motif on the site.</p>
+    <img class="logo" src="directions/concept-lacquer.webp" alt="pretoys in lacquered wooden letters">
+    <div class="band"></div>
+    <div class="swatches">
+      <div class="swatch" style="background:#1d2a64;color:#fff">Indigo<br>#1d2a64</div>
+      <div class="swatch" style="background:#b5202b;color:#fff">Lac red<br>#b5202b</div>
+      <div class="swatch" style="background:#eaa212">Turmeric<br>#eaa212</div>
+      <div class="swatch" style="background:#23774a;color:#fff">Leaf<br>#23774a</div>
+      <div class="swatch" style="background:#fffdf8;border:1px solid #e8dfcf">Ivory<br>#fffdf8</div>
+    </div>
+    <div class="typeset">Anek Latin, wide and bold<small>Designed in India by Ek Type. Stretches wide for headings, normal for reading.</small></div>
+    <div class="phone"><div class="screen">
+      <div class="top"><img src="directions/concept-lacquer.webp" alt=""></div>
+      <div class="band"></div>
+      <div class="scroll">
+        <div class="hello">Hi Roshni</div>
+        <p class="sub">Toys from 42 moms in the circle</p>
+        <div class="search">Search toys</div>
+        <div class="chips">
+          <span class="chip on">All</span>
+          <span class="chip" style="--c:#b5202b"><i></i>Baby</span>
+          <span class="chip" style="--c:#eaa212"><i></i>Building</span>
+          <span class="chip" style="--c:#23774a"><i></i>Books</span>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="photo" style="--bg:#f1e4cd;--c1:#b5202b;--c2:#eaa212"></div><span class="price">₹600</span><div class="title">Wooden train set</div><div class="meta">3–5 yrs, Koramangala</div></div>
+          <div class="card"><div class="photo" style="--bg:#e3ecdf;--c1:#23774a;--c2:#fffdf8"></div><span class="price free">Free</span><div class="title">Board books, 12</div><div class="meta">0–1 yr, Indiranagar</div></div>
+          <div class="card"><div class="photo" style="--bg:#e4e6f1;--c1:#1d2a64;--c2:#eaa212"></div><span class="price">₹1,200</span><div class="title">Duplo farm</div><div class="meta">1–3 yrs, HSR</div></div>
+          <div class="card"><div class="photo" style="--bg:#f6e6c4;--c1:#eaa212;--c2:#b5202b"></div><span class="price">₹1,500</span><div class="title">Balance bike</div><div class="meta">3–5 yrs, HSR</div></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>Browse</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M8 7V5h8v2"/></svg>My toys</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>List</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Circle</span>
+      </div>
+    </div></div>
+    <ul class="notes"><li>Local and unmistakable, especially if the group is in or near Bangalore.</li><li>Busiest of the three. The site stays calm so the logo can carry the color.</li></ul>
+  </section>
+
+  <!-- B -->
+  <section class="tile dir-b">
+    <h2>B. Building game</h2>
+    <p class="idea">Letters assembled from flat painted wooden blocks, after the 1923 Bauhaus building toy. The same four shapes replace every emoji and icon on the site.</p>
+    <img class="logo" src="directions/concept-blocks.webp" alt="pretoys built from painted wooden blocks">
+    <div class="swatches">
+      <div class="swatch" style="background:#15214a;color:#fff">Ink<br>#15214a</div>
+      <div class="swatch" style="background:#e0332a;color:#fff">Red<br>#e0332a</div>
+      <div class="swatch" style="background:#f5bf1a">Yellow<br>#f5bf1a</div>
+      <div class="swatch" style="background:#2153c4;color:#fff">Blue<br>#2153c4</div>
+      <div class="swatch" style="background:#ddb88b">Beech<br>#ddb88b</div>
+    </div>
+    <div class="typeset">jost, all lowercase<small>A free cousin of Futura, the typeface of the Bauhaus era. Headings set big, tight and lowercase.</small></div>
+    <div class="phone"><div class="screen">
+      <div class="top"><img src="directions/concept-blocks.webp" alt=""><span class="plus">+</span></div>
+      <div class="scroll">
+        <div class="hello">toys from<br>the circle</div>
+        <div class="search">search toys</div>
+        <div class="shapes">
+          <span class="shape"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="#e0332a"/></svg>outdoor</span>
+          <span class="shape"><svg viewBox="0 0 30 30"><path d="M2 28V15a13 13 0 0 1 26 0v13h-8V15a5 5 0 0 0-10 0v13z" fill="#2153c4"/></svg>building</span>
+          <span class="shape"><svg viewBox="0 0 30 30"><rect x="3" y="3" width="24" height="24" fill="#f5bf1a"/></svg>books</span>
+          <span class="shape"><svg viewBox="0 0 30 30"><path d="M15 2l13 26H2z" fill="#ddb88b"/></svg>puzzles</span>
+          <span class="shape"><svg viewBox="0 0 30 30"><path d="M2 28a13 13 0 0 1 26 0z" fill="#e0332a"/></svg>baby</span>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="photo" style="--bg:#eef2fb;--c1:#2153c4"><span class="sticker">₹600</span></div><div class="title">wooden train set</div><div class="meta">3–5 yrs, Koramangala</div></div>
+          <div class="card"><div class="photo" style="--bg:#fdf5dc;--c1:#f5bf1a;--r:50%"><span class="sticker free">free</span></div><div class="title">board books, 12</div><div class="meta">0–1 yr, Indiranagar</div></div>
+          <div class="card"><div class="photo" style="--bg:#fbe9e7;--c1:#e0332a;--r:50% 50% 0 0"><span class="sticker">₹1.2k</span></div><div class="title">duplo farm</div><div class="meta">1–3 yrs, HSR</div></div>
+          <div class="card"><div class="photo" style="--bg:#f3ece2;--c1:#ddb88b"><span class="sticker">₹1.5k</span></div><div class="title">balance bike</div><div class="meta">3–5 yrs, HSR</div></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <span class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor"/></svg>browse</span>
+        <span><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="currentColor"/></svg>my toys</span>
+        <span><svg viewBox="0 0 24 24"><path d="M12 3l9 18H3z" fill="currentColor"/></svg>invite</span>
+        <span><svg viewBox="0 0 24 24"><path d="M3 21V12a9 9 0 0 1 18 0v9h-6v-9a3 3 0 0 0-6 0v9z" fill="currentColor"/></svg>circle</span>
+      </div>
+    </div></div>
+    <ul class="notes"><li>Most graphic and modern. Price stickers on photos do the work that cards and shadows usually do.</li><li>Lowercase everywhere is a strong stance. It can be relaxed for body text.</li></ul>
+  </section>
+
+  <!-- C -->
+  <section class="tile dir-c">
+    <h2>C. Name train</h2>
+    <p class="idea">The wooden name train every kid gets as a gift. Toys get passed along the circle, so browsing works the same way: each category is a train of carriages you swipe through.</p>
+    <img class="logo" src="directions/concept-train.webp" alt="PRETOYS as a wooden name train">
+    <div class="swatches">
+      <div class="swatch" style="background:#22345e;color:#fff">Navy<br>#22345e</div>
+      <div class="swatch" style="background:#c9372c;color:#fff">Engine<br>#c9372c</div>
+      <div class="swatch" style="background:#e3a82b">Mustard<br>#e3a82b</div>
+      <div class="swatch" style="background:#3d7d5a;color:#fff">Green<br>#3d7d5a</div>
+      <div class="swatch" style="background:#d9ecf7">Sky<br>#d9ecf7</div>
+    </div>
+    <div class="typeset">Zilla Slab on top<small>Atkinson Hyperlegible underneath, made for easy reading, kind to tired eyes at midnight.</small></div>
+    <div class="phone"><div class="screen">
+      <div class="top"><img src="directions/concept-train.webp" alt=""><div class="rail"></div></div>
+      <div class="scroll">
+        <div class="hello">Hi Roshni, what's leaving the station?</div>
+        <div class="search">Search toys</div>
+        <div class="row"><h4>Cars and trains</h4>
+          <div class="cars">
+            <div class="car" style="--c:#c9372c"><div class="body"><div class="photo" style="--bg:#f6e3dd;--c1:#c9372c"></div><div class="txt"><p class="title">Wooden train set</p><span class="meta">₹600, Koramangala</span></div></div></div>
+            <div class="car" style="--c:#e3a82b"><div class="body"><div class="photo" style="--bg:#fbf0d8;--c1:#e3a82b"></div><div class="txt"><p class="title">Balance bike</p><span class="meta">₹1,500, HSR</span></div></div></div>
+          </div>
+        </div>
+        <div class="row"><h4>Books</h4>
+          <div class="cars">
+            <div class="car" style="--c:#3d7d5a"><div class="body"><div class="photo" style="--bg:#e1efe6;--c1:#3d7d5a"></div><div class="txt"><p class="title">Board books, 12</p><span class="meta">Free, Indiranagar</span></div></div></div>
+            <div class="car" style="--c:#22345e"><div class="body"><div class="photo" style="--bg:#e1e6f0;--c1:#22345e"></div><div class="txt"><p class="title">Gruffalo set</p><span class="meta">₹300, Jayanagar</span></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>Browse</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M8 7V5h8v2"/></svg>My toys</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>List</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M3 13h18"/></svg>Circle</span>
+      </div>
+    </div></div>
+    <ul class="notes"><li>Warmest and most story-driven. The swipeable category rows are a real layout change, not just a new skin.</li><li>The train is very wide. In the phone header it sits small, so the engine alone would work as the icon.</li></ul>
+  </section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<% content_for :title, "Edit #{@listing.title}" %>
+
+<section class="narrow">
+  <h1>Edit listing</h1>
+  <%= render "form", listing: @listing %>
+  <%= button_to "Delete this listing", @listing, method: :delete, class: "btn btn-ghost btn-danger btn-block",
+        form: { data: { turbo_confirm: "Delete this listing for good?" } } %>
+</section>

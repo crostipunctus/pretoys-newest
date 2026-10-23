@@ -1,0 +1,74 @@
+<% content_for :title, @listing.title %>
+<%= render "og_tags", listing: @listing %>
+<% seller = @listing.member %>
+<% mine = seller == current_member %>
+
+<article class="listing">
+  <div class="gallery">
+    <% if @listing.photos.attached? %>
+      <div class="gallery-track">
+        <% @listing.photos.each do |photo| %>
+          <%= image_tag photo.variant(:large), alt: @listing.title, class: "gallery-photo" %>
+        <% end %>
+      </div>
+      <% if @listing.photos.size > 1 %>
+        <p class="muted small center"><%= @listing.photos.size %> photos, swipe to see more</p>
+      <% end %>
+    <% else %>
+      <%= listing_cover(@listing, css_class: "gallery-photo") %>
+    <% end %>
+  </div>
+
+  <div class="listing-info">
+    <% unless @listing.available? %>
+      <span class="status-badge status-inline status-<%= @listing.status %>"><%= @listing.status_label %></span>
+    <% end %>
+    <h1><%= @listing.title %></h1>
+    <p class="price price-lg <%= "price-free" if @listing.free? %>"><%= price_label(@listing) %></p>
+
+    <dl class="facts">
+      <div><dt>Category</dt><dd><%= bead @listing.category_tone %> <%= @listing.category_label %></dd></div>
+      <div><dt>Ages</dt><dd><%= @listing.age_label || "Any age" %></dd></div>
+      <div><dt>Condition</dt><dd><%= @listing.condition_label %></dd></div>
+      <div><dt>Pickup</dt><dd><%= @listing.neighborhood || "Ask the seller" %></dd></div>
+    </dl>
+
+    <% if @listing.description.present? %>
+      <div class="description"><%= simple_format(@listing.description) %></div>
+    <% end %>
+
+    <div class="seller">
+      <%= avatar(seller) %>
+      <div>
+        <%= link_to seller.display_name, seller, class: "seller-name" %>
+        <div class="muted small"><%= vouch_line(seller) %></div>
+      </div>
+    </div>
+
+    <% if mine %>
+      <div class="owner-actions panel">
+        <strong>This is your listing</strong>
+        <div class="button-row">
+          <% (Listing.statuses.keys - [ @listing.status ]).each do |status| %>
+            <%= button_to mark_listing_path(@listing, status: status), method: :patch, class: "btn btn-secondary btn-sm" do %>
+              <%= { "available" => "Mark available", "reserved" => "Mark reserved", "given_away" => "Mark gone" }[status] %>
+            <% end %>
+          <% end %>
+          <%= link_to "Edit", edit_listing_path(@listing), class: "btn btn-ghost btn-sm" %>
+        </div>
+      </div>
+    <% elsif @listing.available? %>
+      <%= link_to whatsapp_chat_url(seller.phone, "Hi #{seller.first_name}! I saw your \"#{@listing.title}\" on Pretoys. Is it still available? #{listing_url(@listing)}"),
+            class: "btn btn-whatsapp btn-block btn-lg", target: "_blank", rel: "noopener" do %>
+        <%= icon "chat" %> Message <%= seller.first_name %> on WhatsApp
+      <% end %>
+    <% end %>
+
+    <%= link_to whatsapp_share_url("#{@listing.title} (#{price_label(@listing)}) on Pretoys #{listing_url(@listing)}"),
+          class: "btn btn-outline btn-block", target: "_blank", rel: "noopener" do %>
+      <%= icon "share" %> Share in the WhatsApp group
+    <% end %>
+
+    <p class="muted small center">Listed <%= time_ago_in_words(@listing.created_at) %> ago</p>
+  </div>
+</article>

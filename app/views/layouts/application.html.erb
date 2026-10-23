@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? "#{yield(:title)} · Pretoys" : "Pretoys" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Pretoys">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#fffdf8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <% if content_for?(:og_tags) %>
+      <%= yield :og_tags %>
+    <% else %>
+      <meta property="og:site_name" content="Pretoys">
+      <meta property="og:title" content="Pretoys">
+      <meta property="og:description" content="Pre-loved toys passed between moms you already know.">
+      <meta property="og:image" content="<%= image_url("/og-image.jpg") %>">
+    <% end %>
+    <%= yield :head %>
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="<%= "signed-in" if authenticated? %>">
+    <% unless content_for?(:hide_topbar) %>
+      <header class="topbar">
+        <div class="topbar-inner">
+          <%= link_to root_path, class: "brand", aria: { label: "Pretoys home" } do %>
+            <%= logo_tag class: "brand-logo" %>
+          <% end %>
+
+          <% if authenticated? %>
+            <nav class="nav-top" aria-label="Main">
+              <%= nav_link "Browse", root_path, active: current_page?(root_path) || current_page?(listings_path) %>
+              <%= nav_link "My toys", mine_listings_path %>
+              <%= nav_link "Circle", members_path %>
+              <%= nav_link "Invite", new_invite_path %>
+              <%= nav_link "Me", edit_profile_path %>
+            </nav>
+            <%= link_to new_listing_path, class: "btn btn-primary btn-sm topbar-cta" do %>
+              <%= icon "plus" %> List a toy
+            <% end %>
+          <% end %>
+        </div>
+      </header>
+    <% end %>
+
+    <main class="page">
+      <% flash.each do |type, message| %>
+        <% next if type == "dev_code" %>
+        <div class="flash flash-<%= type %>" role="<%= type == "alert" ? "alert" : "status" %>"><%= message %></div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <% if authenticated? %>
+      <nav class="tabbar" aria-label="Main">
+        <%= tab_link "Browse", "search", root_path, active: current_page?(root_path) || current_page?(listings_path) %>
+        <%= tab_link "My toys", "box", mine_listings_path %>
+        <%= link_to new_listing_path, class: "tab tab-list" do %>
+          <span class="tab-plus"><%= icon "plus" %></span><span>List</span>
+        <% end %>
+        <%= tab_link "Circle", "rings", members_path %>
+        <%= tab_link "Me", "user", edit_profile_path %>
+      </nav>
+    <% end %>
+  </body>
+</html>

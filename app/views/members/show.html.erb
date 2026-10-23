@@ -1,0 +1,22 @@
+<% content_for :title, @member.display_name %>
+
+<div class="profile-head">
+  <%= avatar(@member, size: :lg) %>
+  <div>
+    <h1><%= @member.display_name %></h1>
+    <p class="muted">
+      <%= vouch_line(@member) %><% if @member.neighborhood %>, <%= @member.neighborhood %><% end %><% if @member.joined? %>, joined <%= @member.joined_at.strftime("%B %Y") %><% end %>
+    </p>
+  </div>
+</div>
+
+<% if @invitees.any? %>
+  <p>Vouched for <%= safe_join(@invitees.map { |invitee| link_to(invitee.display_name, invitee) }, ", ") %>.</p>
+<% end %>
+
+<h2 class="section-title"><%= @member == current_member ? "Your toys" : "#{@member.first_name}'s toys" %></h2>
+<% if @listings.any? %>
+  <div class="grid"><%= render @listings %></div>
+<% else %>
+  <p class="muted">Nothing listed right now.</p>
+<% end %>

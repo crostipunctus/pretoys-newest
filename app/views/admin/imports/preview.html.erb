@@ -1,0 +1,34 @@
+<% content_for :title, "Review import" %>
+<% new_count = @entries.count { |entry| !@existing.include?(entry.phone) } %>
+
+<section class="narrow">
+  <h1>Found <%= pluralize(@entries.size, "number") %></h1>
+  <p class="lead">
+    <%= pluralize(new_count, "new member") %> to add.
+    Untick anyone who isn't in the group. Names are optional: people add their own when they first sign in.
+  </p>
+
+  <%= form_with url: admin_import_path, class: "panel form-card" do |form| %>
+    <div class="import-list">
+      <% @entries.each_with_index do |entry, index| %>
+        <% existing = @existing.include?(entry.phone) %>
+        <div class="import-row <%= "is-existing" if existing %>">
+          <% if existing %>
+            <span class="import-check" aria-hidden="true">✓</span>
+            <span class="mono"><%= entry.phone %></span>
+            <span class="muted small">Already a member</span>
+          <% else %>
+            <%= hidden_field_tag "members[#{index}][phone]", entry.phone %>
+            <%= hidden_field_tag "members[#{index}][include]", "0", id: nil %>
+            <%= check_box_tag "members[#{index}][include]", "1", true, id: "include_#{index}", class: "import-check", aria: { label: "Add #{entry.phone}" } %>
+            <label for="include_<%= index %>" class="mono"><%= entry.phone %></label>
+            <%= text_field_tag "members[#{index}][name]", entry.name, placeholder: "Name (optional)", class: "input input-sm", aria: { label: "Name for #{entry.phone}" } %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <%= form.submit "Add #{pluralize(new_count, "member")}", class: "btn btn-primary btn-block", disabled: new_count.zero? %>
+  <% end %>
+
+  <p class="center"><%= link_to "Start over", new_admin_import_path %></p>
+</section>

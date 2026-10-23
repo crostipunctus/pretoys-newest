@@ -1,0 +1,11 @@
+<%= link_to listing, class: "listing-card" do %>
+  <div class="listing-card-media">
+    <%= listing_cover(listing) %>
+    <% unless listing.available? %>
+      <span class="status-badge status-<%= listing.status %>"><%= listing.status_label %></span>
+    <% end %>
+  </div>
+  <span class="price <%= "price-free" if listing.free? %>"><%= price_label(listing) %></span>
+  <span class="listing-card-title"><%= listing.title %></span>
+  <span class="listing-card-meta"><%= [ listing.age_label, listing.neighborhood ].compact.join(", ").presence || listing.category_label %></span>
+<% end %>

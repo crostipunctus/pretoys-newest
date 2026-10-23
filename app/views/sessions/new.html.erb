@@ -1,0 +1,26 @@
+<% content_for :title, "Sign in" %>
+<% content_for :hide_topbar, true %>
+
+<section class="welcome">
+  <%= logo_tag class: "welcome-logo", fetchpriority: "high" %>
+
+  <h1>Pass toys on to moms you already know.</h1>
+  <p class="lead">
+    Pretoys is a private swap shop for our moms' WhatsApp group. Everyone here was
+    added by another mom, so you always know who you're dealing with.
+  </p>
+
+  <%= form_with url: session_path, class: "panel form-card" do |form| %>
+    <%= form.label :phone, "Your WhatsApp number", class: "label" %>
+    <%= form.telephone_field :phone, value: params[:phone], required: true, autofocus: true,
+          autocomplete: "tel", inputmode: "tel", placeholder: "+91 98765 43210", class: "input input-lg" %>
+    <p class="hint">Use the number you're in the group with. We'll send you a 6-digit code.</p>
+    <%= form.submit "Send my code", class: "btn btn-primary btn-block btn-lg" %>
+  <% end %>
+
+  <ol class="how-it-works">
+    <li><%= bead "red" %> Moms from the group are already in. New moms join when a member vouches for them.</li>
+    <li><%= bead "turmeric" %> List the toys your kids have outgrown, with a price or for free.</li>
+    <li><%= bead "leaf" %> Chat on WhatsApp to arrange pickup. No fees, no strangers.</li>
+  </ol>
+</section>

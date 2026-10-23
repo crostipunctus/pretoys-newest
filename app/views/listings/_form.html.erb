@@ -1,0 +1,59 @@
+<%= form_with model: listing, class: "panel form-card" do |form| %>
+  <%= render "shared/errors", record: listing %>
+
+  <div class="field" data-controller="photo-preview">
+    <span class="label">Photos</span>
+    <% if listing.persisted? && listing.photos.attached? %>
+      <div class="photo-strip">
+        <% listing.photos.each do |photo| %>
+          <label class="photo-thumb">
+            <%= image_tag photo.variant(:thumb), alt: "" %>
+            <span class="photo-remove"><%= check_box_tag "remove_photo_ids[]", photo.id, false, id: "remove_photo_#{photo.id}" %> Remove</span>
+          </label>
+        <% end %>
+      </div>
+    <% end %>
+    <label class="photo-drop">
+      <%= form.file_field :photos, multiple: true, accept: "image/*", include_hidden: false, class: "visually-hidden",
+            data: { photo_preview_target: "input", action: "photo-preview#show" } %>
+      <%= icon "plus" %>
+      <span><%= listing.photos.attached? ? "Add more photos" : "Add photos" %></span>
+      <span class="hint">Up to <%= Listing::MAX_PHOTOS %>. Daylight near a window works best.</span>
+    </label>
+    <div class="photo-strip" data-photo-preview-target="previews"></div>
+  </div>
+
+  <%= form.label :title, "What is it?", class: "label" %>
+  <%= form.text_field :title, required: true, maxlength: 80, placeholder: "e.g. Wooden train set with 20 pieces", class: "input" %>
+
+  <div class="field-row">
+    <div>
+      <%= form.label :price, "Price (#{Rails.configuration.x.currency_symbol})", class: "label" %>
+      <%= form.number_field :price, min: 0, step: 1, required: true, inputmode: "numeric", class: "input" %>
+      <p class="hint">Put 0 to give it away free.</p>
+    </div>
+    <div>
+      <%= form.label :condition, class: "label" %>
+      <%= form.select :condition, Listing::CONDITIONS.invert, {}, class: "input" %>
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div>
+      <%= form.label :category, class: "label" %>
+      <%= form.select :category, Listing::CATEGORIES.map { |key, (label, _)| [ label, key ] }, { prompt: "Choose…" }, required: true, class: "input" %>
+    </div>
+    <div>
+      <%= form.label :age_group, "Best for ages", class: "label" %>
+      <%= form.select :age_group, Listing::AGE_GROUPS.invert, { include_blank: "Any age" }, class: "input" %>
+    </div>
+  </div>
+
+  <%= form.label :description, "Details", class: "label" %>
+  <%= form.text_area :description, rows: 4, placeholder: "Anything missing? Batteries needed? Smoke-free home?", class: "input" %>
+
+  <%= form.label :neighborhood, "Pickup area", class: "label" %>
+  <%= form.text_field :neighborhood, placeholder: "e.g. Indiranagar", class: "input" %>
+
+  <%= form.submit listing.persisted? ? "Save changes" : "List it", class: "btn btn-primary btn-block btn-lg" %>
+<% end %>

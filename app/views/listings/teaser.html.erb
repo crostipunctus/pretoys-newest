@@ -1,0 +1,14 @@
+<% content_for :title, @listing.title %>
+<% content_for :hide_topbar, true %>
+<%= render "og_tags", listing: @listing %>
+
+<section class="narrow">
+  <%= link_to new_session_path, aria: { label: "Pretoys" } do %><%= logo_tag class: "teaser-logo" %><% end %>
+  <div class="teaser">
+    <%= listing_cover(@listing, css_class: "teaser-photo") %>
+    <h1><%= @listing.title %></h1>
+    <p class="price price-lg <%= "price-free" if @listing.free? %>"><%= price_label(@listing) %></p>
+  </div>
+  <p class="lead">This toy is on Pretoys, a private swap for moms in our WhatsApp group. Sign in with your number to see details and message the seller.</p>
+  <%= link_to "Sign in to see it", new_session_path, class: "btn btn-primary btn-block btn-lg" %>
+</section>

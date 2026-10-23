@@ -1,0 +1,21 @@
+<% content_for :title, "Invite a mom" %>
+
+<section class="narrow">
+  <h1>Vouch for a mom</h1>
+  <p class="lead">
+    The circle works because everyone knows someone here. Invite moms you know
+    personally. Your name shows on their profile as the person who invited them.
+  </p>
+
+  <%= form_with model: @member, url: invites_path, class: "panel form-card" do |form| %>
+    <%= render "shared/errors", record: @member %>
+
+    <%= form.label :name, "Name", class: "label" %>
+    <%= form.text_field :name, required: true, placeholder: "e.g. Asha Rao", class: "input" %>
+
+    <%= form.label :phone, "WhatsApp number", class: "label" %>
+    <%= form.telephone_field :phone, required: true, inputmode: "tel", placeholder: "+91 98765 43210", class: "input" %>
+
+    <%= form.submit "Add to the circle", class: "btn btn-primary btn-block" %>
+  <% end %>
+</section>

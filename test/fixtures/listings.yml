@@ -1,0 +1,27 @@
+train:
+  member: priya
+  token: train00001
+  title: Wooden train set
+  price: 600
+  category: vehicles
+  age_group: 3-5
+  condition: like_new
+  status: available
+
+books:
+  member: asha
+  token: books00001
+  title: Board books bundle
+  price: 0
+  category: books
+  condition: good
+  status: available
+
+gone:
+  member: priya
+  token: gone000001
+  title: Old scooter
+  price: 300
+  category: outdoor
+  condition: well_loved
+  status: given_away
